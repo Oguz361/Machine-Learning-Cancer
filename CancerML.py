@@ -38,4 +38,18 @@ norm = layers.Normalization()
 norm.adapt(np.array(dataset[numeric_inputs.keys()]))
 all_numeric_inputs = norm(x)
 
-print(all_numeric_inputs)
+preprocessed_inputs = [all_numeric_inputs]
+
+for name, input in inputs.items():
+    if input.dtype == tf.float32:
+        continue
+    lookup = layers.StringLookup(vocabulary=np.unique(train_features[name]))
+    one_hot = layers.CategoryEncoding(num_tokens=lookup.vocabulary_size())
+
+    x = lookup(input)
+    x = one_hot(x)
+    preprocessed_inputs.append(x)
+
+preprocessed_inputs_cat = layers.Concatenate()(preprocessed_inputs)
+cancer_preprocessing = tf.keras.Model(inputs, preprocessed_inputs_cat)
+tf.keras.utils.plot_model(model = cancer_preprocessing, rankdir="LR", dpi=72, show_shapes=True)
