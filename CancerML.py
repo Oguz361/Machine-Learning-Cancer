@@ -1,7 +1,7 @@
 import tensorflow as tf
 import pandas as pd
 import numpy as np
-#make numpy values easier to read
+#makes numpy values easier to read
 np.set_printoptions(precision=3,suppress=True)
 import tensorflow as tf
 from tensorflow import keras
@@ -56,7 +56,7 @@ cancer_preprocessing = tf.keras.Model(inputs, preprocessed_inputs_cat)
 
 cancer_features_dict = {name: np.array(value) for name, value in cancer_features.items()}
 features_dict = {name:values[:1] for name, values in cancer_features_dict.items()}
-print(cancer_preprocessing(features_dict))
+#print(cancer_preprocessing(features_dict))
 
 def cancer_model(preprocessing_head, inputs):
     body = tf.keras.Sequential([
@@ -67,7 +67,9 @@ def cancer_model(preprocessing_head, inputs):
     result = body(preprocessed_inputs)
     model = tf.keras.Model(inputs, result)
 
-    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),optimizer=tf.keras.optimzers.Adam())
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),optimizers=tf.keras.optimizers.Adam())
     return model
+
+cancer_model = cancer_model(cancer_preprocessing, inputs)
 
 cancer_model.fit(x=cancer_features_dict, y=cancer_labels, epochs=10)    
